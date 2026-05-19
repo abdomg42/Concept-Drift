@@ -7,11 +7,15 @@ across configurable environments with full metric tracking.
 
 from __future__ import annotations
 import os
+import sys
 import random
 import numpy as np
 import torch
 from tqdm import tqdm
 from typing import Optional
+
+# Add parent directory to path so src module can be imported
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from src.agents.dqn_agent import DriftAwareDQN
 from src.detection.drift_detectors import ConceptDriftDetectionSystem
