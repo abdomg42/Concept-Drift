@@ -1,0 +1,56 @@
+# Base experiment configuration
+# Override per-experiment values in experiment-specific configs
+
+seed: 42
+n_episodes: 350
+drift_start: 150
+env_id: cartpole_gravity
+device: cpu
+
+agent:
+  gamma: 0.99
+  lr: 1.0e-3
+  batch_size: 64
+  tau: 0.005
+  eps_start: 1.0
+  eps_end: 0.05
+  eps_decay: 0.995
+  eps_drift_boost: 0.5
+  n_heads: 3
+  latent_dim: 64
+  update_freq: 4
+
+buffer:
+  capacity: 100000
+  alpha: 0.6
+  beta: 0.4
+  recency_decay: 0.995
+
+drift_detection:
+  quorum: 2
+  cooldown: 30
+  use_performance: true
+  use_ks: true
+  use_page_hinkley: true
+  use_adwin: true
+  use_representation: false
+  use_ensemble: false
+  perf_window: 50
+  perf_threshold: 0.20
+  ks_window: 100
+  ks_alpha: 0.05
+  ph_delta: 0.005
+  ph_lambda: 50.0
+  adwin_delta: 0.002
+
+adaptation:
+  strategy: fine_tune
+  fine_tune_lr: 3.0e-4
+  thaw_episodes: 20
+  maml_adapt_steps: 10
+  maml_adapt_lr: 1.0e-3
+  ensemble_size: 5
+
+eval:
+  optimal_return: 500.0
+  recovery_threshold: 0.9
