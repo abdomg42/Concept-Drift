@@ -105,16 +105,31 @@ class MountainCarDrift(gym.Wrapper):
         self.drift_mode = drift_mode
         self._episode = 0
         self.drift_active = False
-        self._base_power = self.env.unwrapped.power  # 0.001
+        # Store base power value - try different attribute names for compatibility
+        unwrapped = self.env.unwrapped
+        if hasattr(unwrapped, 'power'):
+            self._base_power = unwrapped.power
+        elif hasattr(unwrapped, '_power'):
+            self._base_power = unwrapped._power
+        else:
+            # Default MountainCar power is 0.001
+            self._base_power = 0.001
 
     def reset(self, **kwargs):
         self._episode += 1
+        unwrapped = self.env.unwrapped
         if self._episode >= self.drift_start:
             if self.drift_mode == "sudden":
-                self.env.unwrapped.power = self.drift_end_value
+                if hasattr(unwrapped, 'power'):
+                    unwrapped.power = self.drift_end_value
+                elif hasattr(unwrapped, '_power'):
+                    unwrapped._power = self.drift_end_value
             self.drift_active = True
         else:
-            self.env.unwrapped.power = self._base_power
+            if hasattr(unwrapped, 'power'):
+                unwrapped.power = self._base_power
+            elif hasattr(unwrapped, '_power'):
+                unwrapped._power = self._base_power
             self.drift_active = False
         return self.env.reset(**kwargs)
 
