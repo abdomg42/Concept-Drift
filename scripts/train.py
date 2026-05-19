@@ -175,3 +175,21 @@ def train(config: dict, run_name: str = "run") -> dict:
         "detection_timestamps": drift_detector.stats["detection_timestamps"],
         "metrics":             metrics,
     }
+
+
+if __name__ == "__main__":
+    import yaml
+    
+    # Load configuration
+    config_path = os.path.join(os.path.dirname(__file__), "..", "configs", "base.yaml")
+    with open(config_path) as f:
+        config = yaml.safe_load(f)
+    
+    # Run training
+    result = train(config, run_name="single_run")
+    
+    # Print summary
+    print("\n" + "="*80)
+    print("TRAINING COMPLETE")
+    print("="*80)
+    print(result["summary"])
