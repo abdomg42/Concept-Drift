@@ -1,14 +1,3 @@
-"""
-Drift-Controlled Environments
-==============================
-Wrappers around Gymnasium environments that inject configurable drift:
-- CartPoleDrift:   sudden or gradual change in pole length / gravity
-- MountainCarDrift: change in car force / gravity
-- LunarLanderDrift: change in gravity
-
-Each environment emits a `drift_active` flag for ground-truth evaluation.
-"""
-
 from __future__ import annotations
 import numpy as np
 import gymnasium as gym
@@ -17,19 +6,6 @@ from typing import Optional, Tuple, Any
 
 
 class CartPoleDrift(gym.Wrapper):
-    """
-    CartPole-v1 with controllable drift in physics parameters.
-    
-    Drift modes:
-      - 'sudden':   parameters jump instantly at drift_episode
-      - 'gradual':  parameters linearly interpolate over drift_duration episodes
-    
-    Drift axes:
-      - gravity:        default 9.8
-      - masscart:       default 1.0
-      - masspole:       default 0.1
-      - length:         default 0.5
-    """
 
     def __init__(
         self,
@@ -86,11 +62,6 @@ class CartPoleDrift(gym.Wrapper):
 
 
 class MountainCarDrift(gym.Wrapper):
-    """
-    MountainCar-v0 with drift in the force applied per step.
-    
-    A weaker force makes the task significantly harder.
-    """
     def __init__(
         self,
         drift_start: int = 100,

@@ -1,15 +1,3 @@
-"""
-Drift-Aware DQN Agent
-======================
-Deep Q-Network with:
-- Dueling architecture (advantage + value streams)
-- Prioritized Experience Replay
-- Ensemble Q-heads for disagreement-based drift detection
-- Shared encoder network (exposes embeddings for representation drift detection)
-- Adaptive epsilon that increases on drift detection
-- Target network with soft updates
-"""
-
 from __future__ import annotations
 import numpy as np
 import torch
@@ -22,7 +10,6 @@ from .replay_buffer import AdaptiveReplayBuffer
 
 
 class Encoder(nn.Module):
-    """Shared state encoder producing latent embeddings."""
     def __init__(self, obs_dim: int, latent_dim: int = 64):
         super().__init__()
         self.net = nn.Sequential(
@@ -36,11 +23,6 @@ class Encoder(nn.Module):
 
 
 class DuelingQHead(nn.Module):
-    """
-    Dueling network head: separate value V(s) and advantage A(s,a) streams.
-    Q(s,a) = V(s) + (A(s,a) - mean_a A(s,a))
-    Shown to improve stability and sample efficiency.
-    """
     def __init__(self, latent_dim: int, n_actions: int, hidden: int = 64):
         super().__init__()
         self.value_stream = nn.Sequential(
@@ -59,10 +41,6 @@ class DuelingQHead(nn.Module):
 
 
 class EnsembleDQN(nn.Module):
-    """
-    DQN with shared encoder + K independent Q-heads.
-    Variance across heads signals potential drift / epistemic uncertainty.
-    """
     def __init__(self, obs_dim: int, n_actions: int, latent_dim: int = 64, n_heads: int = 3):
         super().__init__()
         self.encoder = Encoder(obs_dim, latent_dim)
@@ -73,7 +51,6 @@ class EnsembleDQN(nn.Module):
         self.n_actions = n_actions
 
     def forward(self, x: torch.Tensor) -> Tuple[torch.Tensor, torch.Tensor]:
-        """Returns (mean_q, std_q) across ensemble heads."""
         z = self.encoder(x)
         qs = torch.stack([head(z) for head in self.heads], dim=0)  # [K, B, A]
         return qs.mean(0), qs.std(0)
@@ -83,21 +60,11 @@ class EnsembleDQN(nn.Module):
             return self.encoder(x)
 
     def q_values_all_heads(self, x: torch.Tensor) -> torch.Tensor:
-        """Return Q-values from all heads [K, B, A]."""
         z = self.encoder(x)
         return torch.stack([head(z) for head in self.heads], dim=0)
 
 
 class DriftAwareDQN:
-    """
-    Complete DQN agent with drift detection hooks.
-    
-    Key design choices:
-    - EnsembleDQN: shared encoder reduces computation vs separate networks
-    - Soft target updates (tau=0.005): more stable than periodic hard updates
-    - Epsilon increases on drift detection: encourages re-exploration
-    - Replay buffer partial reset: avoids relearning from stale transitions
-    """
 
     def __init__(self, obs_dim: int, n_actions: int, config: dict, device: str = "cpu"):
         self.obs_dim = obs_dim

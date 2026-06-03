@@ -1,15 +1,3 @@
-"""
-Evaluation Framework
-====================
-Computes all drift-handling metrics:
-- Detection delay
-- False alarm rate
-- Recovery time
-- Pre/during/post-adaptation returns
-- Catastrophic forgetting measure
-- Transfer efficiency ratio
-"""
-
 from __future__ import annotations
 import numpy as np
 from dataclasses import dataclass, field

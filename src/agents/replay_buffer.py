@@ -1,12 +1,3 @@
-"""
-Adaptive Replay Buffer
-======================
-Prioritized Experience Replay buffer with drift-awareness:
-- Supports recency-weighted sampling after drift events
-- Partial reset to discard stale pre-drift transitions
-- Tracks when each transition was stored for temporal weighting
-"""
-
 from __future__ import annotations
 import numpy as np
 from collections import namedtuple
@@ -18,12 +9,6 @@ Transition = namedtuple(
 
 
 class AdaptiveReplayBuffer:
-    """
-    Prioritized experience replay with drift-adaptive sampling.
-    
-    After drift detection, old transitions receive lower weights
-    so the agent preferentially learns from recent, relevant experience.
-    """
 
     def __init__(
         self,

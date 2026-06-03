@@ -1,8 +1,3 @@
-"""
-Multi-environment experiment runner.
-Runs across 4 environment/drift configurations and collects comparative results.
-"""
-
 import sys, os
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 

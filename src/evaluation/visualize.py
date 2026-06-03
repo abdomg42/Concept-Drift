@@ -1,15 +1,3 @@
-"""
-Visualization Module
-====================
-Generates all analysis plots:
-- Learning curves with drift markers
-- Detection accuracy heatmap
-- Comparison across strategies
-- Q-value variance (ensemble disagreement)
-- Catastrophic forgetting / recovery metrics bar charts
-- t-SNE of latent embeddings (if embeddings recorded)
-"""
-
 from __future__ import annotations
 import os
 import json
@@ -37,9 +25,7 @@ def smooth(x, k=15):
     return np.convolve(x, np.ones(k) / k, mode="valid")
 
 
-# -----------------------------------------------------------------------
-# 1. Learning curve for a single run
-# -----------------------------------------------------------------------
+
 def plot_learning_curve(result: dict, title: str = "", save_path: Optional[str] = None):
     returns = np.array(result["episode_returns"])
     gt      = np.array(result["ground_truth_flags"])
@@ -92,9 +78,6 @@ def plot_learning_curve(result: dict, title: str = "", save_path: Optional[str] 
         plt.show()
 
 
-# -----------------------------------------------------------------------
-# 2. Strategy comparison for a single environment
-# -----------------------------------------------------------------------
 def plot_strategy_comparison(all_results: dict, env_prefix: str,
                               save_path: Optional[str] = None):
     fig, axes = plt.subplots(1, 2, figsize=(14, 5))
@@ -140,9 +123,6 @@ def plot_strategy_comparison(all_results: dict, env_prefix: str,
         plt.show()
 
 
-# -----------------------------------------------------------------------
-# 3. Metrics summary table / heatmap
-# -----------------------------------------------------------------------
 def plot_metrics_heatmap(all_results: dict, save_path: Optional[str] = None):
     metric_keys = [
         "mean_pre_drift_return",
@@ -199,9 +179,6 @@ def plot_metrics_heatmap(all_results: dict, save_path: Optional[str] = None):
         plt.show()
 
 
-# -----------------------------------------------------------------------
-# 4. Detection quality across experiments
-# -----------------------------------------------------------------------
 def plot_detection_quality(all_results: dict, save_path: Optional[str] = None):
     fig, axes = plt.subplots(1, 3, figsize=(15, 5))
     fig.suptitle("Drift Detection Quality", fontsize=13, fontweight="bold")
@@ -257,9 +234,6 @@ def plot_detection_quality(all_results: dict, save_path: Optional[str] = None):
         plt.show()
 
 
-# -----------------------------------------------------------------------
-# 5. Forgetting & recovery summary
-# -----------------------------------------------------------------------
 def plot_forgetting_recovery(all_results: dict, save_path: Optional[str] = None):
     fig, axes = plt.subplots(1, 2, figsize=(12, 5))
     fig.suptitle("Catastrophic Forgetting & Recovery", fontsize=13, fontweight="bold")

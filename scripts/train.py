@@ -1,10 +1,3 @@
-"""
-Training Loop
-=============
-Integrates DriftAwareDQN + ConceptDriftDetectionSystem + AdaptationManager
-across configurable environments with full metric tracking.
-"""
-
 from __future__ import annotations
 import os
 import sys
@@ -33,19 +26,10 @@ def set_seed(seed: int):
 
 
 def train(config: dict, run_name: str = "run") -> dict:
-    """
-    Full training run. Returns a results dict with metrics and training curves.
-
-    config keys:
-      seed, n_episodes, drift_start, env_id, device, agent, buffer,
-      drift_detection, adaptation, eval
-    """
     set_seed(config.get("seed", 42))
     device = config.get("device", "cpu")
 
-    # ------------------------------------------------------------------ #
-    # Environment
-    # ------------------------------------------------------------------ #
+
     env_id      = config.get("env_id", "cartpole_gravity")
     drift_start = config.get("drift_start", 150)
     env = MultiDriftEnvironment.make(env_id, drift_start=drift_start, seed=config.get("seed", 42))
@@ -53,33 +37,23 @@ def train(config: dict, run_name: str = "run") -> dict:
     obs_dim   = env.observation_space.shape[0]
     n_actions = env.action_space.n
 
-    # ------------------------------------------------------------------ #
-    # Agent
-    # ------------------------------------------------------------------ #
+
     agent = DriftAwareDQN(obs_dim, n_actions, config, device=device)
 
-    # ------------------------------------------------------------------ #
-    # Detection system
-    # ------------------------------------------------------------------ #
+
     drift_detector = ConceptDriftDetectionSystem(config)
 
-    # ------------------------------------------------------------------ #
-    # Adaptation manager
-    # ------------------------------------------------------------------ #
+
     adapter = AdaptationManager(agent, config)
 
-    # ------------------------------------------------------------------ #
-    # Metrics tracker
-    # ------------------------------------------------------------------ #
+
     optimal_return = config.get("eval", {}).get("optimal_return", 500.0)
     tracker = MetricsTracker(
         drift_episode=drift_start,
         optimal_return=optimal_return,
     )
 
-    # ------------------------------------------------------------------ #
-    # Training curves (for plotting)
-    # ------------------------------------------------------------------ #
+
     episode_returns:       list = []
     epsilon_trace:         list = []
     drift_flags:           list = []   # True on detected drift episode

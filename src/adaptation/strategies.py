@@ -1,15 +1,3 @@
-"""
-Adaptation Strategies
-======================
-Multiple mechanisms for handling detected concept drift:
-
-1. FineTuner:            Partially reset top layers + increased LR warm start
-2. ExperienceReweighter: Adjust sample weights by recency
-3. MAMLAdapter:          MAML-inspired fast adaptation via gradient meta-learning
-4. MultiPolicyEnsemble:  Pool of policies; selector switches on drift
-5. ProgressiveNet:       Adds new network columns without forgetting old ones
-"""
-
 from __future__ import annotations
 import copy
 import numpy as np
@@ -20,12 +8,6 @@ from typing import Optional
 
 
 class FineTuner:
-    """
-    Fine-tunes the agent's network after drift by:
-    1. Freezing the encoder (preserving feature extraction)
-    2. Reinitializing Q-heads with higher LR
-    3. Gradually unfreezing encoder layers after `thaw_episodes`
-    """
 
     def __init__(self, agent, config: dict):
         self.agent = agent
@@ -58,15 +40,6 @@ class FineTuner:
 
 
 class MAMLAdapter:
-    """
-    MAML-inspired adaptation: maintains a meta-initialization of the network.
-    After drift, performs K gradient steps from the meta-init to quickly adapt.
-    
-    Simplified implementation: meta-init stored after each stable period;
-    on drift, inner-loop adaptation runs for `adapt_steps` steps.
-    
-    This is a first-order MAML approximation (FOMAML) for computational efficiency.
-    """
 
     def __init__(self, agent, config: dict):
         self.agent = agent
@@ -80,10 +53,6 @@ class MAMLAdapter:
         self.meta_init = copy.deepcopy(self.agent.online_net.state_dict())
 
     def adapt(self, support_batch: tuple):
-        """
-        Given a small support batch from the new concept, 
-        take `adapt_steps` gradient steps from meta_init.
-        """
         if self.meta_init is None:
             return  # No meta-init saved yet
 

@@ -1,13 +1,3 @@
-"""
-Concept Drift Detection Module
-================================
-Implements multiple drift detection strategies:
-- Performance-based (rolling return monitoring)
-- Statistical tests (KS test, Page-Hinkley, ADWIN)
-- Representation-based (KL divergence in latent space)
-- Ensemble disagreement
-"""
-
 from __future__ import annotations
 import numpy as np
 from collections import deque
@@ -18,10 +8,6 @@ import torch.nn.functional as F
 
 
 class PerformanceMonitor:
-    """
-    Monitors rolling average of returns and triggers drift
-    if performance drops exceed a configurable threshold.
-    """
     def __init__(self, window: int = 50, threshold: float = 0.20, min_samples: int = 20):
         self.window = window
         self.threshold = threshold          # 20% drop triggers alarm
@@ -61,10 +47,6 @@ class PerformanceMonitor:
 
 
 class KSTestDetector:
-    """
-    Kolmogorov-Smirnov test comparing recent vs reference reward distributions.
-    Drift is flagged when the two distributions differ significantly.
-    """
     def __init__(self, window: int = 100, significance: float = 0.05, min_samples: int = 30):
         self.window = window
         self.significance = significance
@@ -96,8 +78,6 @@ class KSTestDetector:
 
 
 class PageHinkleyDetector:
-    """
-    Page-Hinkley test: sequential change-point detection.
     Detects when the cumulative sum of deviations exceeds a threshold.
     """
     def __init__(self, delta: float = 0.005, lambda_: float = 50.0, alpha: float = 0.9999):
